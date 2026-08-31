@@ -3,95 +3,172 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JARVIS LK7</title>
+<title>JARVIS LK7 — V2</title>
 
 <style>
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    margin: 0;
-    min-height: 100vh;
-    background: #05070a;
-    color: #eaf6ff;
+    background: #02070b;
+    color: #eaf8ff;
     font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
 .app {
-    width: 100%;
-    max-width: 520px;
     min-height: 100vh;
-    padding: 30px 22px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    padding: 55px 20px 30px;
+    text-align: center;
 }
 
 h1 {
-    font-size: 34px;
-    letter-spacing: 6px;
-    margin: 0 0 8px;
-    text-shadow: 0 0 18px #55c7ff;
+    font-size: 42px;
+    letter-spacing: 7px;
+    margin-bottom: 12px;
+    text-shadow:
+        0 0 8px #49cfff,
+        0 0 25px #168dcc;
 }
 
 .sub {
-    opacity: .6;
-    margin-bottom: 40px;
+    color: #91a5b0;
+    font-size: 18px;
+    letter-spacing: 2px;
+    margin-bottom: 75px;
 }
 
-.orb {
-    width: 190px;
-    height: 190px;
+.core {
+    width: 230px;
+    height: 230px;
     border-radius: 50%;
-    border: 2px solid #54c9ff;
-    box-shadow:
-        0 0 25px #159bd9,
-        inset 0 0 35px #0d6e9c;
+    border: 3px solid #42c9ff;
+    position: relative;
     display: flex;
-    align-items: center;
     justify-content: center;
-    font-size: 50px;
-    margin-bottom: 35px;
+    align-items: center;
+    margin-bottom: 65px;
+
+    box-shadow:
+        0 0 15px #159bd9,
+        0 0 45px #075f91,
+        inset 0 0 35px #073c59;
+
+    animation: pulse 2.5s infinite ease-in-out;
+}
+
+.core::before {
+    content: "";
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    border: 1px solid #42c9ff;
+    box-shadow: 0 0 25px #159bd9;
+    animation: rotate 8s linear infinite;
+}
+
+.core::after {
+    content: "";
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 15px #42c9ff;
+    background: #07131a;
+    z-index: 2;
 }
 
 button {
-    border: 1px solid #54c9ff;
-    background: #0a1821;
+    background: #07151d;
     color: white;
+    border: 2px solid #42c9ff;
     border-radius: 50px;
-    padding: 16px 25px;
-    font-size: 15px;
+    padding: 17px 32px;
+    font-size: 17px;
     font-weight: bold;
+    letter-spacing: .5px;
     cursor: pointer;
-    box-shadow: 0 0 18px #12698b;
+
+    box-shadow:
+        0 0 10px #12698b,
+        inset 0 0 10px #06384d;
+
+    transition: .2s;
 }
 
 button:active {
-    transform: scale(.97);
+    transform: scale(.96);
 }
 
-#status {
-    margin: 25px 0;
-    text-align: center;
-    min-height: 48px;
-    line-height: 1.5;
+button:hover {
+    box-shadow:
+        0 0 20px #159bd9,
+        inset 0 0 15px #0a4058;
 }
 
-.quick {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
+.status {
+    margin-top: 35px;
+    min-height: 28px;
+    font-size: 17px;
+    color: #b9d5df;
 }
 
-.quick button {
-    font-size: 13px;
-    padding: 11px 15px;
+.status span {
+    color: #42c9ff;
+    font-weight: bold;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow:
+            0 0 15px #159bd9,
+            0 0 45px #075f91,
+            inset 0 0 35px #073c59;
+    }
+
+    50% {
+        transform: scale(1.035);
+        box-shadow:
+            0 0 25px #42c9ff,
+            0 0 70px #075f91,
+            inset 0 0 45px #0b587a;
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 500px) {
+    h1 {
+        font-size: 34px;
+        letter-spacing: 5px;
+    }
+
+    .sub {
+        font-size: 15px;
+        margin-bottom: 60px;
+    }
+
+    .core {
+        width: 205px;
+        height: 205px;
+    }
 }
 </style>
 </head>
@@ -100,222 +177,63 @@ button:active {
 
 <div class="app">
 
-<h1>JARVIS LK7</h1>
+    <h1>JARVIS LK7</h1>
 
-<div class="sub">
-ASSISTENTE PESSOAL • V1
-</div>
+    <div class="sub">
+        ASSISTENTE PESSOAL • V2
+    </div>
 
-<div class="orb">
-◉
-</div>
+    <div class="core" id="core"></div>
 
-<button id="talk">
-🎙️ FALAR COM O JARVIS
-</button>
+    <button id="talk">
+        🎙️ FALAR COM O JARVIS
+    </button>
 
-<div id="status">
-Pronto. Toque no botão e dê um comando.
-</div>
-
-<div class="quick">
-<button onclick="abrir('Instagram')">Instagram</button>
-<button onclick="abrir('YouTube')">YouTube</button>
-<button onclick="abrir('WhatsApp')">WhatsApp</button>
-<button onclick="abrir('Google')">Google</button>
-</div>
+    <div class="status" id="status">
+        Status: <span>PRONTO</span>
+    </div>
 
 </div>
 
 <script>
 
-const status = document.getElementById("status");
 const talk = document.getElementById("talk");
+const core = document.getElementById("core");
+const status = document.getElementById("status");
 
-function falar(texto) {
+let ouvindo = false;
 
-    status.textContent = "JARVIS: " + texto;
+talk.onclick = function() {
 
-    if ("speechSynthesis" in window) {
+    if (!ouvindo) {
 
-        speechSynthesis.cancel();
+        ouvindo = true;
 
-        const voz = new SpeechSynthesisUtterance(texto);
+        status.innerHTML =
+            'Status: <span>OUVINDO...</span>';
 
-        voz.lang = "pt-BR";
+        talk.innerHTML =
+            "🔵 JARVIS ESTÁ OUVINDO";
 
-        speechSynthesis.speak(voz);
-    }
-}
+        core.style.animationDuration = "0.8s";
 
-function abrir(app) {
+        setTimeout(() => {
 
-    const links = {
+            ouvindo = false;
 
-        Instagram: "https://www.instagram.com/",
-        YouTube: "https://www.youtube.com/",
-        WhatsApp: "https://web.whatsapp.com/",
-        Google: "https://www.google.com/"
+            status.innerHTML =
+                'Status: <span>PRONTO</span>';
 
-    };
+            talk.innerHTML =
+                "🎙️ FALAR COM O JARVIS";
 
-    falar("Abrindo " + app + ".");
+            core.style.animationDuration = "2.5s";
 
-    setTimeout(function() {
+        }, 3000);
 
-        window.location.href = links[app];
-
-    }, 700);
-}
-
-function executar(comando) {
-
-    comando = comando.toLowerCase();
-
-    if (comando.includes("instagram")) {
-
-        abrir("Instagram");
-        return;
     }
 
-    if (comando.includes("youtube")) {
-
-        abrir("YouTube");
-        return;
-    }
-
-    if (comando.includes("whatsapp")) {
-
-        abrir("WhatsApp");
-        return;
-    }
-
-    if (
-        comando.includes("google") ||
-        comando.includes("pesquisar")
-    ) {
-
-        let pesquisa = comando
-            .replace("jarvis", "")
-            .replace("google", "")
-            .replace("pesquisar", "")
-            .trim();
-
-        if (pesquisa.length > 0) {
-
-            falar("Pesquisando.");
-
-            setTimeout(function() {
-
-                window.location.href =
-                    "https://www.google.com/search?q=" +
-                    encodeURIComponent(pesquisa);
-
-            }, 700);
-
-        } else {
-
-            falar("O que deseja pesquisar?");
-        }
-
-        return;
-    }
-
-    if (comando.includes("hora")) {
-
-        const hora =
-            new Date().toLocaleTimeString(
-                "pt-BR",
-                {
-                    hour: "2-digit",
-                    minute: "2-digit"
-                }
-            );
-
-        falar("Agora são " + hora + ".");
-
-        return;
-    }
-
-    if (
-        comando.includes("olá") ||
-        comando.includes("oi") ||
-        comando.includes("jarvis")
-    ) {
-
-        falar("Olá, LK7. Estou pronto.");
-
-        return;
-    }
-
-    falar(
-        "Ainda não conheço esse comando."
-    );
-}
-
-const Reconhecimento =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-if (Reconhecimento) {
-
-    const reconhecimento =
-        new Reconhecimento();
-
-    reconhecimento.lang = "pt-BR";
-
-    reconhecimento.interimResults = false;
-
-    reconhecimento.maxAlternatives = 1;
-
-    reconhecimento.onstart = function() {
-
-        status.textContent =
-            "🎙️ Estou ouvindo...";
-
-        talk.textContent =
-            "🟢 OUVINDO";
-    };
-
-    reconhecimento.onend = function() {
-
-        talk.textContent =
-            "🎙️ FALAR COM O JARVIS";
-    };
-
-    reconhecimento.onerror = function() {
-
-        falar(
-            "Não consegui entender. Tente novamente."
-        );
-    };
-
-    reconhecimento.onresult = function(event) {
-
-        const texto =
-            event.results[0][0].transcript;
-
-        status.textContent =
-            "Você: " + texto;
-
-        executar(texto);
-    };
-
-    talk.onclick = function() {
-
-        reconhecimento.start();
-    };
-
-} else {
-
-    talk.onclick = function() {
-
-        falar(
-            "Seu navegador não oferece reconhecimento de voz. Use o Chrome."
-        );
-
-    };
-}
+};
 
 </script>
 
