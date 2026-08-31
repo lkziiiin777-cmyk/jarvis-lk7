@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS LK7</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: #05070a;
+    color: #eaf6ff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app {
+    width: 100%;
+    max-width: 520px;
+    min-height: 100vh;
+    padding: 30px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+h1 {
+    font-size: 34px;
+    letter-spacing: 6px;
+    margin: 0 0 8px;
+    text-shadow: 0 0 18px #55c7ff;
+}
+
+.sub {
+    opacity: .6;
+    margin-bottom: 40px;
+}
+
+.orb {
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    border: 2px solid #54c9ff;
+    box-shadow:
+        0 0 25px #159bd9,
+        inset 0 0 35px #0d6e9c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    margin-bottom: 35px;
+}
+
+button {
+    border: 1px solid #54c9ff;
+    background: #0a1821;
+    color: white;
+    border-radius: 50px;
+    padding: 16px 25px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 18px #12698b;
+}
+
+button:active {
+    transform: scale(.97);
+}
+
+#status {
+    margin: 25px 0;
+    text-align: center;
+    min-height: 48px;
+    line-height: 1.5;
+}
+
+.quick {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.quick button {
+    font-size: 13px;
+    padding: 11px 15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<h1>JARVIS LK7</h1>
+
+<div class="sub">
+ASSISTENTE PESSOAL • V1
+</div>
+
+<div class="orb">
+◉
+</div>
+
+<button id="talk">
+🎙️ FALAR COM O JARVIS
+</button>
+
+<div id="status">
+Pronto. Toque no botão e dê um comando.
+</div>
+
+<div class="quick">
+<button onclick="abrir('Instagram')">Instagram</button>
+<button onclick="abrir('YouTube')">YouTube</button>
+<button onclick="abrir('WhatsApp')">WhatsApp</button>
+<button onclick="abrir('Google')">Google</button>
+</div>
+
+</div>
+
+<script>
+
+const status = document.getElementById("status");
+const talk = document.getElementById("talk");
+
+function falar(texto) {
+
+    status.textContent = "JARVIS: " + texto;
+
+    if ("speechSynthesis" in window) {
+
+        speechSynthesis.cancel();
+
+        const voz = new SpeechSynthesisUtterance(texto);
+
+        voz.lang = "pt-BR";
+
+        speechSynthesis.speak(voz);
+    }
+}
+
+function abrir(app) {
+
+    const links = {
+
+        Instagram: "https://www.instagram.com/",
+        YouTube: "https://www.youtube.com/",
+        WhatsApp: "https://web.whatsapp.com/",
+        Google: "https://www.google.com/"
+
+    };
+
+    falar("Abrindo " + app + ".");
+
+    setTimeout(function() {
+
+        window.location.href = links[app];
+
+    }, 700);
+}
+
+function executar(comando) {
+
+    comando = comando.toLowerCase();
+
+    if (comando.includes("instagram")) {
+
+        abrir("Instagram");
+        return;
+    }
+
+    if (comando.includes("youtube")) {
+
+        abrir("YouTube");
+        return;
+    }
+
+    if (comando.includes("whatsapp")) {
+
+        abrir("WhatsApp");
+        return;
+    }
+
+    if (
+        comando.includes("google") ||
+        comando.includes("pesquisar")
+    ) {
+
+        let pesquisa = comando
+            .replace("jarvis", "")
+            .replace("google", "")
+            .replace("pesquisar", "")
+            .trim();
+
+        if (pesquisa.length > 0) {
+
+            falar("Pesquisando.");
+
+            setTimeout(function() {
+
+                window.location.href =
+                    "https://www.google.com/search?q=" +
+                    encodeURIComponent(pesquisa);
+
+            }, 700);
+
+        } else {
+
+            falar("O que deseja pesquisar?");
+        }
+
+        return;
+    }
+
+    if (comando.includes("hora")) {
+
+        const hora =
+            new Date().toLocaleTimeString(
+                "pt-BR",
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+
+        falar("Agora são " + hora + ".");
+
+        return;
+    }
+
+    if (
+        comando.includes("olá") ||
+        comando.includes("oi") ||
+        comando.includes("jarvis")
+    ) {
+
+        falar("Olá, LK7. Estou pronto.");
+
+        return;
+    }
+
+    falar(
+        "Ainda não conheço esse comando."
+    );
+}
+
+const Reconhecimento =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+if (Reconhecimento) {
+
+    const reconhecimento =
+        new Reconhecimento();
+
+    reconhecimento.lang = "pt-BR";
+
+    reconhecimento.interimResults = false;
+
+    reconhecimento.maxAlternatives = 1;
+
+    reconhecimento.onstart = function() {
+
+        status.textContent =
+            "🎙️ Estou ouvindo...";
+
+        talk.textContent =
+            "🟢 OUVINDO";
+    };
+
+    reconhecimento.onend = function() {
+
+        talk.textContent =
+            "🎙️ FALAR COM O JARVIS";
+    };
+
+    reconhecimento.onerror = function() {
+
+        falar(
+            "Não consegui entender. Tente novamente."
+        );
+    };
+
+    reconhecimento.onresult = function(event) {
+
+        const texto =
+            event.results[0][0].transcript;
+
+        status.textContent =
+            "Você: " + texto;
+
+        executar(texto);
+    };
+
+    talk.onclick = function() {
+
+        reconhecimento.start();
+    };
+
+} else {
+
+    talk.onclick = function() {
+
+        falar(
+            "Seu navegador não oferece reconhecimento de voz. Use o Chrome."
+        );
+
+    };
+}
+
+</script>
+
+</body>
+</html>
