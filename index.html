@@ -1,1 +1,1080 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#02070b">
+<title>JARVIS LK7 V3</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+min-height:100vh;
+background:
+radial-gradient(circle at center,#071923 0%,#02070b 45%,#000 100%);
+color:#eaf8ff;
+font-family:Arial,sans-serif;
+}
+
+.app{
+min-height:100vh;
+max-width:650px;
+margin:auto;
+padding:35px 20px;
+display:flex;
+flex-direction:column;
+align-items:center;
+text-align:center;
+}
+
+h1{
+font-size:38px;
+letter-spacing:7px;
+margin:15px 0 5px;
+text-shadow:0 0 10px #49cfff,0 0 35px #168dcc;
+}
+
+.sub{
+opacity:.5;
+letter-spacing:2px;
+}
+
+.core{
+width:220px;
+height:220px;
+border:2px solid #42c9ff;
+border-radius:50%;
+margin:55px 0 35px;
+display:flex;
+align-items:center;
+justify-content:center;
+position:relative;
+
+box-shadow:
+0 0 20px #159bd9,
+0 0 60px #075f91,
+inset 0 0 40px #073c59;
+
+animation:pulse 2.5s infinite ease-in-out;
+}
+
+.core:before{
+content:"";
+position:absolute;
+width:165px;
+height:165px;
+border-radius:50%;
+border:1px solid #42c9ff;
+animation:spin 7s linear infinite;
+}
+
+.core:after{
+content:"";
+width:25px;
+height:25px;
+background:white;
+border-radius:50%;
+box-shadow:0 0 25px #42c9ff;
+z-index:2;
+}
+
+.listening{
+animation:pulse .6s infinite alternate;
+}
+
+.processing{
+animation:pulse .25s infinite alternate;
+}
+
+@keyframes pulse{
+0%,100%{transform:scale(1)}
+50%{transform:scale(1.06)}
+}
+
+@keyframes spin{
+to{transform:rotate(360deg)}
+}
+
+#talk{
+border:1px solid #42c9ff;
+background:#07151d;
+color:white;
+border-radius:50px;
+padding:17px 28px;
+font-size:16px;
+font-weight:bold;
+box-shadow:0 0 20px #12698b;
+}
+
+#status{
+margin:25px 0;
+min-height:30px;
+font-size:16px;
+}
+
+#status b{
+color:#42c9ff;
+}
+
+.chat{
+width:100%;
+margin-top:20px;
+border:1px solid #153544;
+border-radius:16px;
+background:#040c11;
+padding:15px;
+text-align:left;
+}
+
+.chatTitle{
+font-size:11px;
+letter-spacing:2px;
+opacity:.45;
+margin-bottom:10px;
+}
+
+#messages{
+max-height:230px;
+overflow:auto;
+font-size:14px;
+line-height:1.6;
+}
+
+.user{
+color:#b9d5df;
+margin:8px 0;
+}
+
+.jarvis{
+color:#42c9ff;
+margin:8px 0;
+}
+
+.quick{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+justify-content:center;
+margin-top:20px;
+}
+
+.quick button{
+border:1px solid #287fa5;
+background:#06131a;
+color:white;
+border-radius:30px;
+padding:10px 14px;
+}
+
+.hint{
+font-size:11px;
+opacity:.35;
+margin-top:25px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<h1>JARVIS LK7</h1>
+
+<div class="sub">
+ASSISTENTE PESSOAL • V3
+</div>
+
+<div class="core" id="core"></div>
+
+<button id="talk">
+🎙️ ATIVAR JARVIS
+</button>
+
+<div id="status">
+Status: <b>PRONTO</b>
+</div>
+
+<div class="quick">
+<button onclick="abrir('Instagram')">Instagram</button>
+<button onclick="abrir('YouTube')">YouTube</button>
+<button onclick="abrir('WhatsApp')">WhatsApp</button>
+<button onclick="abrir('Google')">Google</button>
+</div>
+
+<div class="chat">
+
+<div class="chatTitle">
+CONVERSA
+</div>
+
+<div id="messages">
+<div class="jarvis">
+JARVIS: Sistema online. Diga "Jarvis" para iniciar.
+</div>
+</div>
+
+</div>
+
+<div class="hint">
+Dica: toque no botão e diga "Jarvis".
+</div>
+
+</div>
+
+<script>
+
+const talk=document.getElementById("talk");
+const core=document.getElementById("core");
+const status=document.getElementById("status");
+const messages=document.getElementById("messages");
+
+let conversaAtiva=false;
+
+function adicionar(tipo,texto){
+
+const div=document.createElement("div");
+
+div.className=tipo;
+
+div.textContent=
+(tipo==="user"?"VOCÊ: ":"JARVIS: ")+texto;
+
+messages.appendChild(div);
+
+messages.scrollTop=messages.scrollHeight;
+
+}
+
+function falar(texto){
+
+adicionar("jarvis",texto);
+
+status.innerHTML="Status: <b>RESPONDENDO</b>";
+
+if("speechSynthesis" in window){
+
+speechSynthesis.cancel();
+
+const voz=new SpeechSynthesisUtterance(texto);
+
+voz.lang="pt-BR";
+voz.rate=.95;
+voz.pitch=1;
+
+speechSynthesis.speak(voz);
+
+voz.onend=function(){
+
+status.innerHTML="Status: <b>PRONTO</b>";
+
+};
+
+}
+
+}
+
+function abrir(app){
+
+const links={
+
+Instagram:"https://www.instagram.com/",
+YouTube:"https://www.youtube.com/",
+WhatsApp:"https://web.whatsapp.com/",
+Google:"https://www.google.com/"
+
+};
+
+falar("Abrindo "+app+".");
+
+setTimeout(function(){
+
+window.location.href=links[app];
+
+},800);
+
+}
+
+function responder(texto){
+
+let c=texto.toLowerCase().trim();
+
+adicionar("user",texto);
+
+status.innerHTML="Status: <b>PROCESSANDO</b>";
+
+core.classList.add("processing");
+
+setTimeout(function(){
+
+core.classList.remove("processing");
+
+if(c==="jarvis"||c.includes("jarvis")){
+
+conversaAtiva=true;
+
+falar(
+"Estou ouvindo, LK7. Pode falar."
+);
+
+return;
+
+}
+
+if(c.includes("instagram")){
+
+abrir("Instagram");
+return;
+
+}
+
+if(c.includes("youtube")){
+
+abrir("YouTube");
+return;
+
+}
+
+if(c.includes("whatsapp")){
+
+abrir("WhatsApp");
+return;
+
+}
+
+if(c.includes("google")){
+
+abrir("Google");
+return;
+
+}
+
+if(c.includes("hora")){
+
+let hora=new Date().toLocaleTimeString(
+"pt-BR",
+{
+hour:"2-digit",
+minute:"2-digit"
+}
+);
+
+falar("Agora são "+hora+".");
+
+return;
+
+}
+
+if(c.includes("data")||c.includes("dia")){
+
+let data=new Date().toLocaleDateString(
+"pt-BR",
+{
+day:"2-digit",
+month:"long",
+year:"numeric"
+}
+);
+
+falar("Hoje é "+data+".");
+
+return;
+
+}
+
+if(c.includes("quem é você")||
+c.includes("quem e voce")){
+
+falar(
+"Eu sou o JARVIS LK7, seu assistente pessoal."
+);
+
+return;
+
+}
+
+if(
+c.includes("obrigado")||
+c.includes("valeu")
+){
+
+falar(
+"Disponha, LK7. Estou sempre pronto."
+);
+
+return;
+
+}
+
+if(
+c.includes("como você está")||
+c.includes("como voce esta")
+){
+
+falar(
+"Todos os sistemas estão funcionando normalmente."
+);
+
+return;
+
+}
+
+if(c.includes("pesquisar")||
+c.includes("pesquise")){
+
+let pesquisa=c
+.replace("jarvis","")
+.replace("pesquisar","")
+.replace("pesquise","")
+.trim();
+
+if(pesquisa){
+
+falar("Pesquisando por "+pesquisa+".");
+
+setTimeout(function(){
+
+window.location.href=
+"https://www.google.com/search?q="+
+encodeURIComponent(pesquisa);
+
+},900);
+
+}else{
+
+falar("O que deseja pesquisar?");
+
+}
+
+return;
+
+}
+
+falar(
+"Entendi você, LK7. Ainda estou aprendendo novos comandos."
+);
+
+},500);
+
+}
+
+const SpeechRecognition=
+window.SpeechRecognition||
+window.webkitSpeechRecognition;
+
+if(SpeechRecognition){
+
+const reconhecimento=new SpeechRecognition();
+
+reconhecimento.lang="pt-BR";
+reconhecimento.interimResults=false;
+reconhecimento.continuous=false;
+reconhecimento.maxAlternatives=1;
+
+reconhecimento.onstart=function(){
+
+core.classList.add("listening");
+
+talk.textContent="🔵 JARVIS OUVINDO...";
+
+status.innerHTML=
+"Status: <b>OUVINDO</b>";
+
+};
+
+reconhecimento.onend=function(){
+
+core.classList.remove("listening");
+
+talk.textContent="🎙️ ATIVAR JARVIS";
+
+};
+
+reconhecimento.onerror=function(){
+
+core.classList.remove("listening");
+
+talk.textContent="🎙️ ATIVAR JARVIS";
+
+falar(
+"Não consegui ouvir. Tente novamente."
+);
+
+};
+
+reconhecimento.onresult=function(event){
+
+const texto=
+event.results[0][0].transcript;
+
+responder(texto);
+
+};
+
+talk.onclick=function(){
+
+try{
+
+reconhecimento.start();
+
+}catch(e){}
+
+};
+
+}else{
+
+talk.onclick=function(){
+
+falar(
+"Seu navegador não suporta reconhecimento de voz. Use o Chrome."
+);
+
+};
+
+}
+
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#02070b">
+<title>JARVIS LK7 V3</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+min-height:100vh;
+background:
+radial-gradient(circle at center,#071923 0%,#02070b 45%,#000 100%);
+color:#eaf8ff;
+font-family:Arial,sans-serif;
+}
+
+.app{
+min-height:100vh;
+max-width:650px;
+margin:auto;
+padding:35px 20px;
+display:flex;
+flex-direction:column;
+align-items:center;
+text-align:center;
+}
+
+h1{
+font-size:38px;
+letter-spacing:7px;
+margin:15px 0 5px;
+text-shadow:0 0 10px #49cfff,0 0 35px #168dcc;
+}
+
+.sub{
+opacity:.5;
+letter-spacing:2px;
+}
+
+.core{
+width:220px;
+height:220px;
+border:2px solid #42c9ff;
+border-radius:50%;
+margin:55px 0 35px;
+display:flex;
+align-items:center;
+justify-content:center;
+position:relative;
+
+box-shadow:
+0 0 20px #159bd9,
+0 0 60px #075f91,
+inset 0 0 40px #073c59;
+
+animation:pulse 2.5s infinite ease-in-out;
+}
+
+.core:before{
+content:"";
+position:absolute;
+width:165px;
+height:165px;
+border-radius:50%;
+border:1px solid #42c9ff;
+animation:spin 7s linear infinite;
+}
+
+.core:after{
+content:"";
+width:25px;
+height:25px;
+background:white;
+border-radius:50%;
+box-shadow:0 0 25px #42c9ff;
+z-index:2;
+}
+
+.listening{
+animation:pulse .6s infinite alternate;
+}
+
+.processing{
+animation:pulse .25s infinite alternate;
+}
+
+@keyframes pulse{
+0%,100%{transform:scale(1)}
+50%{transform:scale(1.06)}
+}
+
+@keyframes spin{
+to{transform:rotate(360deg)}
+}
+
+#talk{
+border:1px solid #42c9ff;
+background:#07151d;
+color:white;
+border-radius:50px;
+padding:17px 28px;
+font-size:16px;
+font-weight:bold;
+box-shadow:0 0 20px #12698b;
+}
+
+#status{
+margin:25px 0;
+min-height:30px;
+font-size:16px;
+}
+
+#status b{
+color:#42c9ff;
+}
+
+.chat{
+width:100%;
+margin-top:20px;
+border:1px solid #153544;
+border-radius:16px;
+background:#040c11;
+padding:15px;
+text-align:left;
+}
+
+.chatTitle{
+font-size:11px;
+letter-spacing:2px;
+opacity:.45;
+margin-bottom:10px;
+}
+
+#messages{
+max-height:230px;
+overflow:auto;
+font-size:14px;
+line-height:1.6;
+}
+
+.user{
+color:#b9d5df;
+margin:8px 0;
+}
+
+.jarvis{
+color:#42c9ff;
+margin:8px 0;
+}
+
+.quick{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+justify-content:center;
+margin-top:20px;
+}
+
+.quick button{
+border:1px solid #287fa5;
+background:#06131a;
+color:white;
+border-radius:30px;
+padding:10px 14px;
+}
+
+.hint{
+font-size:11px;
+opacity:.35;
+margin-top:25px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<h1>JARVIS LK7</h1>
+
+<div class="sub">
+ASSISTENTE PESSOAL • V3
+</div>
+
+<div class="core" id="core"></div>
+
+<button id="talk">
+🎙️ ATIVAR JARVIS
+</button>
+
+<div id="status">
+Status: <b>PRONTO</b>
+</div>
+
+<div class="quick">
+<button onclick="abrir('Instagram')">Instagram</button>
+<button onclick="abrir('YouTube')">YouTube</button>
+<button onclick="abrir('WhatsApp')">WhatsApp</button>
+<button onclick="abrir('Google')">Google</button>
+</div>
+
+<div class="chat">
+
+<div class="chatTitle">
+CONVERSA
+</div>
+
+<div id="messages">
+<div class="jarvis">
+JARVIS: Sistema online. Diga "Jarvis" para iniciar.
+</div>
+</div>
+
+</div>
+
+<div class="hint">
+Dica: toque no botão e diga "Jarvis".
+</div>
+
+</div>
+
+<script>
+
+const talk=document.getElementById("talk");
+const core=document.getElementById("core");
+const status=document.getElementById("status");
+const messages=document.getElementById("messages");
+
+let conversaAtiva=false;
+
+function adicionar(tipo,texto){
+
+const div=document.createElement("div");
+
+div.className=tipo;
+
+div.textContent=
+(tipo==="user"?"VOCÊ: ":"JARVIS: ")+texto;
+
+messages.appendChild(div);
+
+messages.scrollTop=messages.scrollHeight;
+
+}
+
+function falar(texto){
+
+adicionar("jarvis",texto);
+
+status.innerHTML="Status: <b>RESPONDENDO</b>";
+
+if("speechSynthesis" in window){
+
+speechSynthesis.cancel();
+
+const voz=new SpeechSynthesisUtterance(texto);
+
+voz.lang="pt-BR";
+voz.rate=.95;
+voz.pitch=1;
+
+speechSynthesis.speak(voz);
+
+voz.onend=function(){
+
+status.innerHTML="Status: <b>PRONTO</b>";
+
+};
+
+}
+
+}
+
+function abrir(app){
+
+const links={
+
+Instagram:"https://www.instagram.com/",
+YouTube:"https://www.youtube.com/",
+WhatsApp:"https://web.whatsapp.com/",
+Google:"https://www.google.com/"
+
+};
+
+falar("Abrindo "+app+".");
+
+setTimeout(function(){
+
+window.location.href=links[app];
+
+},800);
+
+}
+
+function responder(texto){
+
+let c=texto.toLowerCase().trim();
+
+adicionar("user",texto);
+
+status.innerHTML="Status: <b>PROCESSANDO</b>";
+
+core.classList.add("processing");
+
+setTimeout(function(){
+
+core.classList.remove("processing");
+
+if(c==="jarvis"||c.includes("jarvis")){
+
+conversaAtiva=true;
+
+falar(
+"Estou ouvindo, LK7. Pode falar."
+);
+
+return;
+
+}
+
+if(c.includes("instagram")){
+
+abrir("Instagram");
+return;
+
+}
+
+if(c.includes("youtube")){
+
+abrir("YouTube");
+return;
+
+}
+
+if(c.includes("whatsapp")){
+
+abrir("WhatsApp");
+return;
+
+}
+
+if(c.includes("google")){
+
+abrir("Google");
+return;
+
+}
+
+if(c.includes("hora")){
+
+let hora=new Date().toLocaleTimeString(
+"pt-BR",
+{
+hour:"2-digit",
+minute:"2-digit"
+}
+);
+
+falar("Agora são "+hora+".");
+
+return;
+
+}
+
+if(c.includes("data")||c.includes("dia")){
+
+let data=new Date().toLocaleDateString(
+"pt-BR",
+{
+day:"2-digit",
+month:"long",
+year:"numeric"
+}
+);
+
+falar("Hoje é "+data+".");
+
+return;
+
+}
+
+if(c.includes("quem é você")||
+c.includes("quem e voce")){
+
+falar(
+"Eu sou o JARVIS LK7, seu assistente pessoal."
+);
+
+return;
+
+}
+
+if(
+c.includes("obrigado")||
+c.includes("valeu")
+){
+
+falar(
+"Disponha, LK7. Estou sempre pronto."
+);
+
+return;
+
+}
+
+if(
+c.includes("como você está")||
+c.includes("como voce esta")
+){
+
+falar(
+"Todos os sistemas estão funcionando normalmente."
+);
+
+return;
+
+}
+
+if(c.includes("pesquisar")||
+c.includes("pesquise")){
+
+let pesquisa=c
+.replace("jarvis","")
+.replace("pesquisar","")
+.replace("pesquise","")
+.trim();
+
+if(pesquisa){
+
+falar("Pesquisando por "+pesquisa+".");
+
+setTimeout(function(){
+
+window.location.href=
+"https://www.google.com/search?q="+
+encodeURIComponent(pesquisa);
+
+},900);
+
+}else{
+
+falar("O que deseja pesquisar?");
+
+}
+
+return;
+
+}
+
+falar(
+"Entendi você, LK7. Ainda estou aprendendo novos comandos."
+);
+
+},500);
+
+}
+
+const SpeechRecognition=
+window.SpeechRecognition||
+window.webkitSpeechRecognition;
+
+if(SpeechRecognition){
+
+const reconhecimento=new SpeechRecognition();
+
+reconhecimento.lang="pt-BR";
+reconhecimento.interimResults=false;
+reconhecimento.continuous=false;
+reconhecimento.maxAlternatives=1;
+
+reconhecimento.onstart=function(){
+
+core.classList.add("listening");
+
+talk.textContent="🔵 JARVIS OUVINDO...";
+
+status.innerHTML=
+"Status: <b>OUVINDO</b>";
+
+};
+
+reconhecimento.onend=function(){
+
+core.classList.remove("listening");
+
+talk.textContent="🎙️ ATIVAR JARVIS";
+
+};
+
+reconhecimento.onerror=function(){
+
+core.classList.remove("listening");
+
+talk.textContent="🎙️ ATIVAR JARVIS";
+
+falar(
+"Não consegui ouvir. Tente novamente."
+);
+
+};
+
+reconhecimento.onresult=function(event){
+
+const texto=
+event.results[0][0].transcript;
+
+responder(texto);
+
+};
+
+talk.onclick=function(){
+
+try{
+
+reconhecimento.start();
+
+}catch(e){}
+
+};
+
+}else{
+
+talk.onclick=function(){
+
+falar(
+"Seu navegador não suporta reconhecimento de voz. Use o Chrome."
+);
+
+};
+
+}
+
+</script>
+
+</body>
+</html>
